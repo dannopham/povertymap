@@ -180,7 +180,8 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
       var counties = null;
       counties = L.geoJson.ajax("assets/WAPoverty.geojson", {
         onEachFeature: function (feature, layer) {
-            layer.bindPopup('People Living in Poverty : ' + feature.properties.Num_Living,{closeButton: false})
+            layer.bindPopup("<p></p>" + 'CountyID : ' + feature.properties.Census_Tra + "</p>"
+                            + 'People Living in Poverty : ' + feature.properties.Num_Living,{closeButton: false})
             layer.on('mouseover', function(){layer.openPopup();})
             layer.on('mouseout', function(){layer.closePopup();})
         },

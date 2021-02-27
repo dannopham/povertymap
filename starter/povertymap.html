@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Air Traffic Control Tower in the US</title>
+    <title>WA State Poverty</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"/>
     <style>
@@ -83,7 +83,9 @@
         attribution: 'Airport Data &copy; DATA.GOV | US States &copy; Mike Bostock &copy D3 | Base Map &copy; CartoDB | Made By Daniel Pham'
     }).addTo(mymap); */
 
-    L.geoJson.ajax("assets/WAPoverty.geojson").addTo(mymap);
+    L.geoJson.ajax("assets/WAPoverty.geojson",{
+      attribution: 'WA Poverty &copy; geo.wa.gov | WA Counties &copy; geo.wa.gov | Base Map &copy; CartoDB | Made By Daniel Pham'
+    }).addTo(mymap);
 
     colors = chroma.scale('YlGnBu').colors(5);
 
@@ -111,11 +113,11 @@
     var counties = null;
     counties = L.geoJson.ajax("assets/WAPoverty.geojson", {
       onEachFeature: function (feature, layer) {
-          layer.bindPopup('Number of People Living in Poverty: ' + feature.properties.Num_Living,{closeButton: false})
+          layer.bindPopup('People Living in Poverty : ' + feature.properties.Num_Living,{closeButton: false})
           layer.on('mouseover', function(){layer.openPopup();})
           layer.on('mouseout', function(){layer.closePopup();})
       },
-        style: style
+      style: style
     }).addTo(mymap);
 
     var legend = L.control({position: 'topright'});
@@ -123,7 +125,7 @@
     legend.onAdd = function () {
 
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<b># Population % Living in Poverty </b><br />';
+        div.innerHTML += '<b># of People Living in Poverty </b><br />';
         div.innerHTML += '<i style="background: ' + colors[4] + '; opacity: 0.5"></i><p> 4000+ </p>';
         div.innerHTML += '<i style="background: ' + colors[3] + '; opacity: 0.5"></i><p> 3000-3999 </p>';
         div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p> 2000-2999 </p>';
