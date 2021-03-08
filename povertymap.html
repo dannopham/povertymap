@@ -83,7 +83,7 @@
         attribution: 'Airport Data &copy; DATA.GOV | US States &copy; Mike Bostock &copy D3 | Base Map &copy; CartoDB | Made By Daniel Pham'
     }).addTo(mymap); */
 
-    L.geoJson.ajax("assets/WAPoverty.geojson",{
+    L.geoJson.ajax("assets/UnaffordableHousing.geojson",{
       attribution: 'WA Poverty &copy; geo.wa.gov | WA Counties &copy; geo.wa.gov | Base Map &copy; CartoDB | Made By Daniel Pham'
     }).addTo(mymap);
 
@@ -91,17 +91,17 @@
 
     function setColor(density) {
       var id = 0;
-      if (density > 4000) { id = 4; }
-      else if (density > 3000 && density <= 3999) { id = 3; }
-      else if (density > 2000 && density <= 2999) { id = 2; }
-      else if (density > 1000 &&  density <= 1999) { id = 1; }
-      else  { id < 1000; }
+      if (density > 400) { id = 4; }
+      else if (density > 300 && density <= 400) { id = 3; }
+      else if (density > 200 && density <= 300) { id = 2; }
+      else if (density > 100 &&  density <= 200) { id = 1; }
+      else  { id < 100; }
       return colors[id];
     }
 
     function style(feature) {
         return {
-            fillColor: setColor(feature.properties.Num_Living),
+            fillColor: setColor(feature.properties.Count_),
             fillOpacity: 0.4,
             weight: 2,
             opacity: 1,
@@ -111,9 +111,11 @@
     }
 
     var counties = null;
-    counties = L.geoJson.ajax("assets/WAPoverty.geojson", {
+    counties = L.geoJson.ajax("assets/UnaffordableHousing.geojson", {
       onEachFeature: function (feature, layer) {
-          layer.bindPopup('People Living in Poverty : ' + feature.properties.Num_Living,{closeButton: false})
+          layer.bindPopup('Number of people spending more than 30% of their income on housing: ' + feature.properties.Count_ + '<br>'
+          + 'Percentage of people spending more than 30% of their income on housing : ' + feature.properties.Percentage + '%'
+          + '<br>' + 'Total Count: ' + feature.properties.Population,{closeButton: false})
           layer.on('mouseover', function(){layer.openPopup();})
           layer.on('mouseout', function(){layer.closePopup();})
       },
@@ -125,15 +127,12 @@
     legend.onAdd = function () {
 
         var div = L.DomUtil.create('div', 'legend');
-        div.innerHTML += '<b># of People Living in Poverty </b><br />';
-        div.innerHTML += '<i style="background: ' + colors[4] + '; opacity: 0.5"></i><p> 4000+ </p>';
-        div.innerHTML += '<i style="background: ' + colors[3] + '; opacity: 0.5"></i><p> 3000-3999 </p>';
-        div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p> 2000-2999 </p>';
-        div.innerHTML += '<i style="background: ' + colors[1] + '; opacity: 0.5"></i><p> 1000-1999 </p>';
-        div.innerHTML += '<i style="background: ' + colors[0] + '; opacity: 0.5"></i><p> 0-1000 </p>';
-        /*div.innerHTML += '<hr><b>Air Traffic Control Tower<b><br />';
-        div.innerHTML += '<i class="fa fa-paper-plane marker-color-1"></i><p> Tower Available </p>';
-        div.innerHTML += '<i class="fa fa-paper-plane marker-color-2"></i><p> Tower Not Available </p>';*/
+        div.innerHTML += '<b># of People Spending more than 30% of their income on housing </b><br />';
+        div.innerHTML += '<i style="background: ' + colors[4] + '; opacity: 0.5"></i><p> 400-500 </p>';
+        div.innerHTML += '<i style="background: ' + colors[3] + '; opacity: 0.5"></i><p> 300-400 </p>';
+        div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p> 200-300 </p>';
+        div.innerHTML += '<i style="background: ' + colors[1] + '; opacity: 0.5"></i><p> 100-200 </p>';
+        div.innerHTML += '<i style="background: ' + colors[0] + '; opacity: 0.5"></i><p> < 100 </p>';
         return div;
     };
 

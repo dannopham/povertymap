@@ -9,23 +9,66 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
   <style>
-    /* how to make a div take the remaining height
-  https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-height */
-    html,
-    body,
-    main {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      display: flex;
-      flex-flow: column;
-    }
+  /* how to make a div take the remaining height
+https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-height */
+  html,
+  body,
+  main {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
 
-    #map {
-      flex-grow: 1;
-    }
+  #map {
+    flex-grow: 1;
+  }
+
+  html,
+  body,
+  #map {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: #fff;
+  }
+
+  .legend {
+    line-height: 16px;
+    width: 180px;
+    color: #333333;
+    font-family: 'Open Sans', cursive;
+    padding: 6px 8px;
+    background: white;
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+
+  .legend i {
+    width: 16px;
+    height: 16px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.9;
+  }
+
+  .legend img {
+    width: 16px;
+    height: 16px;
+    margin-right: 3px;
+    float: left;
+  }
+
+  .legend p {
+    font-size: 12px;
+    line-height: 16px;
+    margin: 0;
+  }
   </style>
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-ajax/2.1.0/leaflet.ajax.min.js"></script>
@@ -80,91 +123,72 @@
     <div id="map"></div>
   </main>
   <script>
-    // 1. Create a map object.
-    var mymap = L.map('map', {
-      center: [47.7511, -120.7401],
-      zoom: 7,
-      maxZoom: 10,
-      minZoom: 3,
-      detectRetina: true
-    });
 
-    // 2. Add a base map.
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
+      var mymap = L.map('map', {
+          center: [47.7511, -120.7401],
+          zoom: 7,
+          maxZoom: 10,
+          minZoom: 2,
+          detectRetina: true});
 
-    // Empty county variable to store county information and circle variable to store
-    // all circle information on the map
-    var counties = null;
-    var circles = new L.featureGroup();
+      L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
 
-    // 3. Creates a color scale from colorbrewer (chroma.js) - 'YlOrRd' - for the
-    // counts of cell towers on the map.
-    var colors = chroma.scale('YlOrRd').colors(5);
+      L.geoJson.ajax("assets/UnaffordableHousing.geojson",{
+        attribution: 'WA Poverty &copy; geo.wa.gov | WA Counties &copy; geo.wa.gov | Base Map &copy; CartoDB | Made By Daniel Pham'
+      }).addTo(mymap);
 
-    // 4. setColor function that takes in the density (count of cell towers per county)
-    // and assigns a color in accordance to the color scale - 'YlOrRd'
-    function setColor(density) {
-      var id = 0;
-      if (density > 18) {
-        id = 4;
-      } else if (density > 11 && density <= 18) {
-        id = 3;
-      } else if (density > 9 && density <= 11) {
-        id = 2;
-      } else if (density > 5 && density <= 9) {
-        id = 1;
-      } else {
-        id = 0;
+      colors = chroma.scale('YlGnBu').colors(5);
+
+      function setColor(density) {
+        var id = 0;
+        if (density > 400) { id = 4; }
+        else if (density > 300 && density <= 400) { id = 3; }
+        else if (density > 200 && density <= 300) { id = 2; }
+        else if (density > 100 &&  density <= 200) { id = 1; }
+        else  { id < 100; }
+        return colors[id];
       }
-      return colors[id];
-    }
 
-    // 5. Takes in the wacountydata.geojson to attribute information onto counties,
-    // and build circles to represent the number of cell towers in each Washington
-    // county.
-    Promise.all([
-      d3.json("assets/wacountydata.geojson")
-    ]).then(function(datasets) {
-
-      // Stores county boundary information provided from the geojson file and
-      // create settings for display onto the map
-      counties = new L.geoJSON(datasets[0], {
-        style: function(feature) {
+      function style(feature) {
           return {
-            stroke: true,
-            weight: 2,
-            fillOpacity: 0.1,
-            opacity: 0.2,
-            color: 'gray'
+              fillColor: setColor(feature.properties.Count_),
+              fillOpacity: 0.4,
+              weight: 2,
+              opacity: 1,
+              color: '#b4b4b4',
+              dashArray: '4'
           };
-        },
-        // For each circle, center each onto the center of the county, create a proportional size
-        // for the radius of each circle, and set each circle's color accordingly
-        onEachFeature: function(feature, layer) {
-          var circle = L.circle(Object.values(L.polygon(feature.geometry.coordinates).getBounds().getCenter()).reverse(), {
-            radius: 900 * Math.pow(feature.properties.CTNUM, 1),
-            stroke: true,
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.9,
-            color: 'white',
-            fillColor: setColor(feature.properties.CTNUM)
-          });
-          // Add all circles to the circle feature variable and a pop-up when the mouse hovers onto a specific circle.
-          // Uses the tooltip function provided by d3.js.
-          circle.addTo(circles);
-          circle.bindTooltip("# of Cell Towers in " + feature.properties.NAME + ": " + feature.properties.CTNUM, {
-            sticky: true
-          });
-        }
-      });
+      }
 
-      // 6. Adds circles and county information onto map.
-      circles.addTo(mymap);
-      counties.addTo(mymap);
-      counties.bringToBack();
-    });
+      var counties = null;
+      counties = L.geoJson.ajax("assets/UnaffordableHousing.geojson", {
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup('Number of people spending more than 30% of their income on housing: ' + feature.properties.Count_ + '<br>'
+            + 'Percentage of people spending more than 30% of their income on housing : ' + feature.properties.Percentage + '%'
+            + '<br>' + 'Total Count: ' + feature.properties.Population,{closeButton: false})
+            layer.on('mouseover', function(){layer.openPopup();})
+            layer.on('mouseout', function(){layer.closePopup();})
+        },
+        style: style
+      }).addTo(mymap);
+
+      var legend = L.control({position: 'topright'});
+
+      legend.onAdd = function () {
+
+          var div = L.DomUtil.create('div', 'legend');
+          div.innerHTML += '<b># of People Spending more than 30% of their income on housing </b><br />';
+          div.innerHTML += '<i style="background: ' + colors[4] + '; opacity: 0.5"></i><p> 400-500 </p>';
+          div.innerHTML += '<i style="background: ' + colors[3] + '; opacity: 0.5"></i><p> 300-400 </p>';
+          div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p> 200-300 </p>';
+          div.innerHTML += '<i style="background: ' + colors[1] + '; opacity: 0.5"></i><p> 100-200 </p>';
+          div.innerHTML += '<i style="background: ' + colors[0] + '; opacity: 0.5"></i><p> < 100 </p>';
+          return div;
+      };
+
+      legend.addTo(mymap);
+
+      L.control.scale({position: 'bottomleft'}).addTo(mymap);
   </script>
 </body>
-
 </html>
