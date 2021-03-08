@@ -126,30 +126,6 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
 
       L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
 
-      /*var airports = null;
-
-
-      var colors = chroma.scale('Dark2').mode('lch').colors(2);
-
-      for (i = 0; i < 2; i++) {
-          $('head').append($("<style> .marker-color-" + (i + 1).toString() + " { color: " + colors[i] + "; font-size: 15px; text-shadow: 0 0 3px #ffffff;} </style>"));
-      }
-
-      airports = L.geoJson.ajax("assets/airports.geojson", {
-          onEachFeature: function (feature, layer) {
-              layer.bindPopup(feature.properties.AIRPT_NAME,{closeButton: false})
-              layer.on('mouseover', function(){layer.openPopup();})
-              layer.on('mouseout', function(){layer.closePopup();})
-          },
-          pointToLayer: function (feature, latlng) {
-              var id = 0;
-              if (feature.properties.CNTL_TWR == "Y") { id = 0; }
-              else { id = 1;}
-              return L.marker(latlng, {icon: L.divIcon({className: 'fa fa-paper-plane marker-color-' + (id + 1).toString() })});
-          },
-          attribution: 'Airport Data &copy; DATA.GOV | US States &copy; Mike Bostock &copy D3 | Base Map &copy; CartoDB | Made By Daniel Pham'
-      }).addTo(mymap); */
-
       L.geoJson.ajax("assets/WAPoverty.geojson",{
         attribution: 'WA Poverty &copy; geo.wa.gov | WA Counties &copy; geo.wa.gov | Base Map &copy; CartoDB | Made By Daniel Pham'
       }).addTo(mymap);
@@ -180,8 +156,9 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
       var counties = null;
       counties = L.geoJson.ajax("assets/WAPoverty.geojson", {
         onEachFeature: function (feature, layer) {
-            layer.bindPopup("<p></p>" + 'CountyID : ' + feature.properties.Census_Tra + "</p>"
-                            + 'People Living in Poverty : ' + feature.properties.Num_Living,{closeButton: false})
+            layer.bindPopup('CountyID : ' + feature.properties.Census_Tra + '<br>'
+                            + 'People Living in Poverty : ' + feature.properties.Num_Living + '<br>'
+                            + 'IBL Rank: ' + feature.properties.IBL_Rank,{closeButton: false})
             layer.on('mouseover', function(){layer.openPopup();})
             layer.on('mouseout', function(){layer.closePopup();})
         },
@@ -199,9 +176,6 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
           div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p> 2000-2999 </p>';
           div.innerHTML += '<i style="background: ' + colors[1] + '; opacity: 0.5"></i><p> 1000-1999 </p>';
           div.innerHTML += '<i style="background: ' + colors[0] + '; opacity: 0.5"></i><p> 0-1000 </p>';
-          /*div.innerHTML += '<hr><b>Air Traffic Control Tower<b><br />';
-          div.innerHTML += '<i class="fa fa-paper-plane marker-color-1"></i><p> Tower Available </p>';
-          div.innerHTML += '<i class="fa fa-paper-plane marker-color-2"></i><p> Tower Not Available </p>';*/
           return div;
       };
 
