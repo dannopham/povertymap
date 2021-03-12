@@ -91,6 +91,9 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
         <li class="nav-item">
           <a class="nav-link" href="map-b.html">Poverty Map</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="map-c.html">Unemployed Population</a>
+        </li>
       </ul>
       <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
@@ -144,6 +147,7 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
         onEachFeature: function (feature, layer) {
             layer.bindPopup('CountyID : ' + feature.properties.Census_Tra + '<br>'
                             + 'People Living in Poverty : ' + feature.properties.Num_Living + '<br>'
+                            + 'Percent Living in Poverty: ' + Math.trunc(feature.properties.Percent_Li) + '%' + '<br>'
                             + 'IBL Rank: ' + feature.properties.IBL_Rank,{closeButton: false})
             layer.on('mouseover', function(){layer.openPopup();})
             layer.on('mouseout', function(){layer.closePopup();})
