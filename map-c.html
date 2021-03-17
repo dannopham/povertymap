@@ -141,7 +141,7 @@ https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-
     var counties = null;
     counties = L.geoJson.ajax("assets/Unemployed_Population.geojson", {
       onEachFeature: function (feature, layer) {
-          layer.bindPopup('County ID: ' + feature.properties.Census_Tra + '<br>'
+          layer.bindPopup('Census ID: ' + feature.properties.Census_Tra + '<br>'
           + 'Number of people unemployed: ' + Math.trunc(feature.properties.Num_Unempl) + '<br>'
           + 'Percentage of people unemployed: ' + feature.properties.Percent_Un + '%'
           + '<br>' + 'Total Employable: ' + Math.trunc(feature.properties.Employable),{closeButton: false})
